@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "FindePlace - Encontre o local perfeito para seu evento",
   description: "Plataforma para encontrar locais para eventos corporativos, casamentos, reuniões e treinamentos",
-    generator: 'v0.dev'
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -30,6 +30,3 @@ export default function RootLayout({
     </html>
   )
 }
-
-
-import './globals.css'
