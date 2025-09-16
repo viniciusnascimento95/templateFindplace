@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetTrigger } from "@/components/ui/sheet"
-import { Filter } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { SupplierFilters } from "@/components/supplier-filters"
 import {
   Search,
   MapPin,
@@ -26,6 +25,7 @@ import {
   Award,
   Clock,
   DollarSign,
+  Filter,
 } from "lucide-react"
 
 // Mock data para fornecedores
@@ -224,12 +224,14 @@ export default function SuppliersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-brand-50/30 dark:from-gray-900 dark:to-gray-800">
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            <span className="gradient-text">Fornecedores</span>
+            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 bg-clip-text text-transparent">
+              Fornecedores
+            </span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Conecte-se com os melhores profissionais para tornar seu evento inesquecível
@@ -244,7 +246,7 @@ export default function SuppliersPage() {
               <Input
                 type="text"
                 placeholder="Buscar fornecedores..."
-                className="pl-10 h-11 sm:h-12 bg-white/80 backdrop-blur-sm border-brand-200 text-base"
+                className="pl-10 h-11 sm:h-12 bg-white/80 backdrop-blur-sm border-indigo-200 text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -254,37 +256,55 @@ export default function SuppliersPage() {
                 <SheetTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex-1 sm:flex-none border-brand-200 hover:bg-brand-50 bg-transparent h-11"
+                    className="flex-1 sm:flex-none border-indigo-200 hover:bg-indigo-50 bg-transparent h-11"
                   >
                     <Filter className="h-4 w-4 mr-2" />
                     Filtros
                   </Button>
                 </SheetTrigger>
-                {/* ... sheet content */}
+                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader>
+                    <SheetTitle>Filtros de Fornecedores</SheetTitle>
+                    <SheetDescription>Refine sua busca por fornecedores</SheetDescription>
+                  </SheetHeader>
+                  <div className="py-4">
+                    <SupplierFilters />
+                  </div>
+                </SheetContent>
               </Sheet>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="flex-1 sm:w-[200px] h-11 bg-white/80 backdrop-blur-sm border-brand-200">
+                <SelectTrigger className="flex-1 sm:w-[200px] h-11 bg-white/80 backdrop-blur-sm border-indigo-200">
                   <SelectValue placeholder="Ordenar" />
                 </SelectTrigger>
-                {/* ... select content */}
+                <SelectContent>
+                  <SelectItem value="rating">Melhor Avaliação</SelectItem>
+                  <SelectItem value="reviews">Mais Avaliações</SelectItem>
+                  <SelectItem value="name">Nome A-Z</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
 
-          {/* Category Tabs - Mobile Optimized */}
+          {/* Category Buttons - Mobile Optimized */}
           <div className="overflow-x-auto">
-            <TabsList className="inline-flex w-max min-w-full bg-white/80 backdrop-blur-sm border border-brand-200 p-1">
+            <div className="flex gap-2 pb-2 min-w-max">
               {categories.map((category) => (
-                <TabsTrigger
+                <Button
                   key={category.id}
-                  value={category.id}
-                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-brand-600 data-[state=active]:text-white"
+                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm whitespace-nowrap ${
+                    selectedCategory === category.id
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      : "border-indigo-200 hover:bg-indigo-50 bg-transparent"
+                  }`}
                 >
                   <category.icon className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>{category.label}</span>
-                </TabsTrigger>
+                </Button>
               ))}
-            </TabsList>
+            </div>
           </div>
         </div>
 
@@ -302,19 +322,22 @@ export default function SuppliersPage() {
           {filteredSuppliers.map((supplier) => {
             const CategoryIcon = getCategoryIcon(supplier.category)
             return (
-              <Card key={supplier.id} className="card-hover border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <Card
+                key={supplier.id}
+                className="transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 border-0 shadow-lg bg-white/80 backdrop-blur-sm"
+              >
                 <CardHeader className="pb-3 sm:pb-4 p-4 sm:p-6">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-brand-100 to-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <CategoryIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-600" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <CategoryIcon className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2 truncate">
                           <span className="truncate">{supplier.name}</span>
                           {supplier.verified && (
                             <Award
-                              className="h-4 w-4 sm:h-5 sm:w-5 text-brand-600 flex-shrink-0"
+                              className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 flex-shrink-0"
                               title="Fornecedor Verificado"
                             />
                           )}
@@ -360,12 +383,12 @@ export default function SuppliersPage() {
                   {/* Services - Mobile Optimized */}
                   <div className="flex flex-wrap gap-1">
                     {supplier.services.slice(0, 2).map((service, index) => (
-                      <Badge key={index} variant="outline" className="text-xs border-brand-200">
+                      <Badge key={index} variant="outline" className="text-xs border-indigo-200">
                         {service}
                       </Badge>
                     ))}
                     {supplier.services.length > 2 && (
-                      <Badge variant="outline" className="text-xs border-brand-200">
+                      <Badge variant="outline" className="text-xs border-indigo-200">
                         +{supplier.services.length - 2}
                       </Badge>
                     )}
@@ -385,8 +408,8 @@ export default function SuppliersPage() {
 
                   {/* Price Range */}
                   <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-success-600" />
-                    <span className="font-medium text-success-600 text-xs sm:text-sm">{supplier.priceRange}</span>
+                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                    <span className="font-medium text-green-600 text-xs sm:text-sm">{supplier.priceRange}</span>
                   </div>
 
                   {/* Contact Buttons - Mobile Optimized */}
@@ -411,7 +434,10 @@ export default function SuppliersPage() {
                         <span className="sm:hidden">Email</span>
                       </Button>
                     </div>
-                    <Button size="sm" className="btn-gradient text-xs sm:text-sm h-9 sm:h-8 sm:flex-1">
+                    <Button
+                      size="sm"
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 text-xs sm:text-sm h-9 sm:h-8 sm:flex-1"
+                    >
                       Ver Perfil
                     </Button>
                   </div>
@@ -439,7 +465,7 @@ export default function SuppliersPage() {
                 setSelectedCategory("all")
               }}
               variant="outline"
-              className="border-brand-200 hover:bg-brand-50"
+              className="border-indigo-200 hover:bg-indigo-50"
             >
               Limpar Filtros
             </Button>
@@ -448,13 +474,13 @@ export default function SuppliersPage() {
 
         {/* CTA Section */}
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-brand-600 to-purple-600 rounded-2xl p-8 md:p-12 text-white">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">É um fornecedor?</h3>
             <p className="text-xl opacity-90 mb-6 max-w-2xl mx-auto">
               Cadastre-se na nossa plataforma e conecte-se com milhares de organizadores de eventos
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="bg-white text-brand-600 hover:bg-gray-100">
+              <Button size="lg" variant="secondary" className="bg-white text-indigo-600 hover:bg-gray-100">
                 Cadastrar como Fornecedor
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 bg-transparent">
