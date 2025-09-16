@@ -90,11 +90,6 @@ const config = {
           800: "#92400e",
           900: "#78350f",
         },
-        gradient: {
-          from: "#667eea",
-          via: "#764ba2",
-          to: "#f093fb",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
