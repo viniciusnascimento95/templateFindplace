@@ -70,7 +70,7 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-2xl gradient-text flex items-center gap-2">
             <Wine className="h-6 w-6" />
@@ -79,8 +79,8 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-1">
               <label className="block text-sm font-medium mb-2">
                 <Users className="inline h-4 w-4 mr-1" />
                 Número de Convidados
@@ -90,10 +90,11 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
                 placeholder="100"
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-1">
               <label className="block text-sm font-medium mb-2">
                 <Clock className="inline h-4 w-4 mr-1" />
                 Duração (horas)
@@ -103,15 +104,16 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
                 placeholder="4"
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-1">
               <label className="block text-sm font-medium mb-2">
                 <Thermometer className="inline h-4 w-4 mr-1" />
                 Época do Ano
               </label>
-              <Select value={season} onValueChange={setSeason}>
+              <Select value={season} onValueChange={setSeason} className="w-full">
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a época" />
                 </SelectTrigger>
@@ -124,9 +126,9 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
               </Select>
             </div>
 
-            <div>
+            <div className="sm:col-span-1">
               <label className="block text-sm font-medium mb-2">Tipo de Evento</label>
-              <Select value={eventType} onValueChange={setEventType}>
+              <Select value={eventType} onValueChange={setEventType} className="w-full">
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
@@ -146,8 +148,8 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
                 <CardHeader>
                   <CardTitle className="text-xl">Estimativa de Bebidas</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                         <div className="flex items-center gap-2">
@@ -231,7 +233,7 @@ export function DrinkCalculator({ isOpen, onClose }: DrinkCalculatorProps) {
           )}
 
           <div className="flex justify-end pt-4 border-t">
-            <Button onClick={onClose} variant="outline">
+            <Button onClick={onClose} variant="outline" className="w-full sm:w-auto bg-transparent">
               Fechar
             </Button>
           </div>

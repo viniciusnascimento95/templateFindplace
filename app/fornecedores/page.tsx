@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetTrigger } from "@/components/ui/sheet"
+import { Filter } from "lucide-react"
 import {
   Search,
   MapPin,
@@ -223,10 +225,10 @@ export default function SuppliersPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-brand-50/30 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <span className="gradient-text">Fornecedores</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -235,45 +237,55 @@ export default function SuppliersPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Buscar fornecedores, serviços ou especialidades..."
-                className="pl-10 h-12 bg-white/80 backdrop-blur-sm border-brand-200"
+                placeholder="Buscar fornecedores..."
+                className="pl-10 h-11 sm:h-12 bg-white/80 backdrop-blur-sm border-brand-200 text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[200px] h-12 bg-white/80 backdrop-blur-sm border-brand-200">
-                <SelectValue placeholder="Ordenar por" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rating">Melhor Avaliação</SelectItem>
-                <SelectItem value="reviews">Mais Avaliações</SelectItem>
-                <SelectItem value="name">Nome A-Z</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex-1 sm:flex-none border-brand-200 hover:bg-brand-50 bg-transparent h-11"
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filtros
+                  </Button>
+                </SheetTrigger>
+                {/* ... sheet content */}
+              </Sheet>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="flex-1 sm:w-[200px] h-11 bg-white/80 backdrop-blur-sm border-brand-200">
+                  <SelectValue placeholder="Ordenar" />
+                </SelectTrigger>
+                {/* ... select content */}
+              </Select>
+            </div>
           </div>
 
-          {/* Category Tabs */}
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 bg-white/80 backdrop-blur-sm border border-brand-200">
+          {/* Category Tabs - Mobile Optimized */}
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex w-max min-w-full bg-white/80 backdrop-blur-sm border border-brand-200 p-1">
               {categories.map((category) => (
                 <TabsTrigger
                   key={category.id}
                   value={category.id}
-                  className="flex items-center gap-2 data-[state=active]:bg-brand-600 data-[state=active]:text-white"
+                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-brand-600 data-[state=active]:text-white"
                 >
-                  <category.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{category.label}</span>
+                  <category.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span>{category.label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
-          </Tabs>
+          </div>
         </div>
 
         {/* Results Count */}
@@ -286,27 +298,32 @@ export default function SuppliersPage() {
         </div>
 
         {/* Suppliers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {filteredSuppliers.map((supplier) => {
             const CategoryIcon = getCategoryIcon(supplier.category)
             return (
               <Card key={supplier.id} className="card-hover border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-brand-100 to-purple-100 rounded-lg flex items-center justify-center">
-                        <CategoryIcon className="h-6 w-6 text-brand-600" />
+                <CardHeader className="pb-3 sm:pb-4 p-4 sm:p-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-brand-100 to-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <CategoryIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-600" />
                       </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                          {supplier.name}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2 truncate">
+                          <span className="truncate">{supplier.name}</span>
                           {supplier.verified && (
-                            <Award className="h-5 w-5 text-brand-600" title="Fornecedor Verificado" />
+                            <Award
+                              className="h-4 w-4 sm:h-5 sm:w-5 text-brand-600 flex-shrink-0"
+                              title="Fornecedor Verificado"
+                            />
                           )}
                         </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                          <MapPin className="h-4 w-4" />
-                          {supplier.location.neighborhood}, {supplier.location.city}
+                        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                          <span className="truncate">
+                            {supplier.location.neighborhood}, {supplier.location.city}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -314,75 +331,87 @@ export default function SuppliersPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => toggleFavorite(supplier.id)}
-                      className="text-gray-400 hover:text-red-500"
+                      className="text-gray-400 hover:text-red-500 h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
                     >
                       <Heart
-                        className={`h-5 w-5 ${favorites.includes(supplier.id) ? "fill-red-500 text-red-500" : ""}`}
+                        className={`h-4 w-4 sm:h-5 sm:w-5 ${favorites.includes(supplier.id) ? "fill-red-500 text-red-500" : ""}`}
                       />
                     </Button>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
                   <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{supplier.description}</p>
 
                   {/* Rating and Reviews */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="font-medium">{supplier.rating}</span>
+                        <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-current" />
+                        <span className="font-medium text-sm sm:text-base">{supplier.rating}</span>
                       </div>
-                      <span className="text-sm text-gray-600 dark:text-gray-400">({supplier.reviews} avaliações)</span>
+                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">({supplier.reviews})</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">
                       {getCategoryLabel(supplier.category)}
                     </Badge>
                   </div>
 
-                  {/* Services */}
+                  {/* Services - Mobile Optimized */}
                   <div className="flex flex-wrap gap-1">
-                    {supplier.services.slice(0, 3).map((service, index) => (
+                    {supplier.services.slice(0, 2).map((service, index) => (
                       <Badge key={index} variant="outline" className="text-xs border-brand-200">
                         {service}
                       </Badge>
                     ))}
-                    {supplier.services.length > 3 && (
+                    {supplier.services.length > 2 && (
                       <Badge variant="outline" className="text-xs border-brand-200">
-                        +{supplier.services.length - 3}
+                        +{supplier.services.length - 2}
                       </Badge>
                     )}
                   </div>
 
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  {/* Stats - Mobile Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span>Responde em {supplier.responseTime}</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <Users className="h-4 w-4" />
+                      <Users className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span>{supplier.completedEvents} eventos</span>
                     </div>
                   </div>
 
                   {/* Price Range */}
                   <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="h-4 w-4 text-success-600" />
-                    <span className="font-medium text-success-600">{supplier.priceRange}</span>
+                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-success-600" />
+                    <span className="font-medium text-success-600 text-xs sm:text-sm">{supplier.priceRange}</span>
                   </div>
 
-                  {/* Contact Buttons */}
-                  <div className="flex gap-2 pt-4 border-t">
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Ligar
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
-                    </Button>
-                    <Button size="sm" className="flex-1 btn-gradient">
+                  {/* Contact Buttons - Mobile Optimized */}
+                  <div className="flex flex-col sm:flex-row gap-2 pt-3 sm:pt-4 border-t">
+                    <div className="flex gap-2 sm:flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent text-xs sm:text-sm h-9 sm:h-8"
+                      >
+                        <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Ligar</span>
+                        <span className="sm:hidden">Tel</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent text-xs sm:text-sm h-9 sm:h-8"
+                      >
+                        <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Email</span>
+                        <span className="sm:hidden">Email</span>
+                      </Button>
+                    </div>
+                    <Button size="sm" className="btn-gradient text-xs sm:text-sm h-9 sm:h-8 sm:flex-1">
                       Ver Perfil
                     </Button>
                   </div>
@@ -398,7 +427,9 @@ export default function SuppliersPage() {
             <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="h-12 w-12 text-gray-400" />
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Nenhum fornecedor encontrado</h3>
+            <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+              Nenhum fornecedor encontrado
+            </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
               Tente ajustar os filtros ou termos de busca para encontrar fornecedores que atendam às suas necessidades.
             </p>

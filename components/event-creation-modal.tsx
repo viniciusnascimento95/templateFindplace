@@ -40,26 +40,28 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto w-[95vw] max-w-[95vw] sm:w-full sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl gradient-text">Criar Novo Evento</DialogTitle>
+          <DialogTitle className="text-xl sm:text-2xl gradient-text">Criar Novo Evento</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Progress Indicator */}
-          <div className="flex items-center justify-center space-x-4">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Progress Indicator - Mobile Optimized */}
+          <div className="flex items-center justify-center space-x-2 sm:space-x-4">
             {[1, 2, 3].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center">
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+                    "w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium",
                     step >= stepNumber ? "bg-brand-600 text-white" : "bg-gray-200 text-gray-600",
                   )}
                 >
                   {stepNumber}
                 </div>
                 {stepNumber < 3 && (
-                  <div className={cn("w-12 h-0.5 mx-2", step > stepNumber ? "bg-brand-600" : "bg-gray-200")} />
+                  <div
+                    className={cn("w-8 sm:w-12 h-0.5 mx-1 sm:mx-2", step > stepNumber ? "bg-brand-600" : "bg-gray-200")}
+                  />
                 )}
               </div>
             ))}
@@ -68,11 +70,11 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
           {/* Step 1: Informações Básicas */}
           {step === 1 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Informações Básicas</h3>
+              <h3 className="text-base sm:text-lg font-semibold">Informações Básicas</h3>
 
               <div>
                 <label className="block text-sm font-medium mb-2">Nome do Evento</label>
-                <Input placeholder="Ex: Casamento Sarah & João" />
+                <Input placeholder="Ex: Casamento Sarah & João" className="h-11 sm:h-auto" />
               </div>
 
               <div>
@@ -113,7 +115,7 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
 
               <div>
                 <label className="block text-sm font-medium mb-2">Descrição (Opcional)</label>
-                <Textarea placeholder="Descreva seu evento..." rows={3} />
+                <Textarea placeholder="Descreva seu evento..." rows={3} className="h-11 sm:h-auto" />
               </div>
             </div>
           )}
@@ -121,14 +123,14 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
           {/* Step 2: Local e Convidados */}
           {step === 2 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Local e Convidados</h3>
+              <h3 className="text-base sm:text-lg font-semibold">Local e Convidados</h3>
 
               <div>
                 <label className="block text-sm font-medium mb-2">
                   <MapPin className="inline h-4 w-4 mr-1" />
                   Local Preferido
                 </label>
-                <Input placeholder="Ex: São Paulo, SP ou nome do local" />
+                <Input placeholder="Ex: São Paulo, SP ou nome do local" className="h-11 sm:h-auto" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -137,7 +139,7 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
                     <Users className="inline h-4 w-4 mr-1" />
                     Número de Convidados
                   </label>
-                  <Input type="number" placeholder="150" />
+                  <Input type="number" placeholder="150" className="h-11 sm:h-auto" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Estilo do Evento</label>
@@ -177,14 +179,14 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
           {/* Step 3: Orçamento */}
           {step === 3 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Orçamento e Finalização</h3>
+              <h3 className="text-base sm:text-lg font-semibold">Orçamento e Finalização</h3>
 
               <div>
                 <label className="block text-sm font-medium mb-2">
                   <DollarSign className="inline h-4 w-4 mr-1" />
                   Orçamento Total (R$)
                 </label>
-                <Input type="number" placeholder="25000" />
+                <Input type="number" placeholder="25000" className="h-11 sm:h-auto" />
               </div>
 
               <div>
@@ -211,18 +213,23 @@ export function EventCreationModal({ isOpen, onClose }: EventCreationModalProps)
                 <Textarea
                   placeholder="Alguma necessidade especial, restrições alimentares, acessibilidade, etc."
                   rows={3}
+                  className="h-11 sm:h-auto"
                 />
               </div>
             </div>
           )}
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between pt-6 border-t">
-            <Button variant="outline" onClick={step === 1 ? onClose : handlePrevious}>
+          {/* Navigation Buttons - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-6 border-t">
+            <Button
+              variant="outline"
+              onClick={step === 1 ? onClose : handlePrevious}
+              className="order-2 sm:order-1 bg-transparent"
+            >
               {step === 1 ? "Cancelar" : "Anterior"}
             </Button>
 
-            <Button onClick={step === 3 ? handleSubmit : handleNext} className="btn-gradient">
+            <Button onClick={step === 3 ? handleSubmit : handleNext} className="btn-gradient order-1 sm:order-2">
               {step === 3 ? "Criar Evento" : "Próximo"}
             </Button>
           </div>

@@ -77,16 +77,16 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto w-[95vw] max-w-[95vw] sm:w-full sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl gradient-text flex items-center gap-2">
-            <Calculator className="h-6 w-6" />
+          <DialogTitle className="text-xl sm:text-2xl gradient-text flex items-center gap-2">
+            <Calculator className="h-5 w-5 sm:h-6 sm:w-6" />
             Calculadora de Custos
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">
                 <Users className="inline h-4 w-4 mr-1" />
@@ -97,6 +97,7 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
                 placeholder="100"
+                className="h-11 sm:h-auto"
               />
             </div>
 
@@ -141,6 +142,7 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
                 placeholder="25000"
+                className="h-11 sm:h-auto"
               />
             </div>
           </div>
@@ -148,21 +150,23 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
           {eventType && style && guests > 0 && (
             <div className="space-y-4">
               <Card className="border-brand-200 bg-gradient-to-r from-brand-50 to-purple-50">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-brand-600" />
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-brand-600" />
                     Estimativa de Custo
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-4xl font-bold gradient-text mb-2">R$ {estimate.toLocaleString("pt-BR")}</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-2xl sm:text-4xl font-bold gradient-text mb-2">
+                      R$ {estimate.toLocaleString("pt-BR")}
+                    </div>
+                    <div className="text-xs sm:text-sm text-gray-600">
                       Aproximadamente R$ {Math.round(estimate / guests)} por convidado
                     </div>
                     {budget > 0 && (
                       <div
-                        className={`mt-2 text-sm font-medium ${
+                        className={`mt-2 text-sm sm:text-base font-medium ${
                           budget >= estimate ? "text-success-600" : "text-warning-600"
                         }`}
                       >
@@ -191,9 +195,11 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
                       <div key={item.label} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded ${item.color}`}></div>
-                          <span className="text-sm font-medium">{item.label}</span>
+                          <span className="text-sm sm:text-base font-medium">{item.label}</span>
                         </div>
-                        <div className="text-sm font-semibold">R$ {item.value.toLocaleString("pt-BR")}</div>
+                        <div className="text-sm sm:text-base font-semibold">
+                          R$ {item.value.toLocaleString("pt-BR")}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -202,7 +208,7 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
 
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                 <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">💡 Dicas para economizar:</h4>
-                <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <ul className="text-sm sm:text-base text-blue-800 dark:text-blue-200 space-y-1">
                   <li>• Considere eventos em dias da semana para descontos</li>
                   <li>• Negocie pacotes fechados com fornecedores</li>
                   <li>• Opte por decorações sazonais e locais</li>
@@ -213,7 +219,7 @@ export function CostCalculator({ isOpen, onClose }: CostCalculatorProps) {
           )}
 
           <div className="flex justify-end pt-4 border-t">
-            <Button onClick={onClose} variant="outline">
+            <Button onClick={onClose} variant="outline" className="w-full sm:w-auto bg-transparent">
               Fechar
             </Button>
           </div>
