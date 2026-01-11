@@ -71,9 +71,9 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center gap-2">
             <Button variant="outline" className="border-brand-200 hover:bg-brand-50 bg-transparent">
-              Entrar
+              <Link href="/login">Entrar</Link>
             </Button>
-            <Button className="btn-gradient">Cadastrar</Button>
+            <Button className="btn-gradient"><Link href="/signup">Cadastrar</Link></Button>
           </div>
         </div>
       </div>
@@ -136,10 +136,13 @@ export function Navbar() {
               <Button
                 variant="outline"
                 className="w-full border-brand-200 hover:bg-brand-50 bg-transparent text-base h-11"
+                asChild
               >
-                Entrar
+                <Link href="/login" onClick={() => setIsMenuOpen(false)}>Entrar</Link>
               </Button>
-              <Button className="w-full btn-gradient text-base h-11">Cadastrar</Button>
+              <Button className="w-full btn-gradient text-base h-11" asChild>
+                <Link href="/signup" onClick={() => setIsMenuOpen(false)}>Cadastrar</Link>
+              </Button>
             </div>
           </div>
         </div>
