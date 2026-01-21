@@ -1,21 +1,23 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Apple, Loader2, Mail } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import * as z from "zod"
-import { Loader2, Mail, Apple } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { cn } from "@/lib/utils"
 
 // Schema de validação
 const signUpSchema = z
     .object({
+        name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
         email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
         password: z.string().min(8, { message: "A senha deve ter pelo menos 8 caracteres." }),
         confirmPassword: z.string(),
@@ -31,27 +33,48 @@ const signUpSchema = z
 type SignUpFormValues = z.infer<typeof signUpSchema>
 
 export default function SignUpPage() {
+    const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const form = useForm<SignUpFormValues>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
+            name: "",
             email: "",
             password: "",
             confirmPassword: "",
         },
     })
 
-    // Função de submissão (simulada)
+    // Função de submissão
     async function onSubmit(data: SignUpFormValues) {
         setIsLoading(true)
 
-        // Simulação de delay de API
-        setTimeout(() => {
-            console.log(data)
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                }),
+            })
+
+            if (response.ok) {
+                toast.success("Usuário criado com sucesso!")
+                router.push("/login")
+            } else {
+                toast.error("Erro ao criar usuário. Tente novamente.")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Erro ao conectar com o servidor.")
+        } finally {
             setIsLoading(false)
-            // Aqui você adicionaria a lógica real de cadastro
-        }, 2000)
+        }
     }
 
     return (
@@ -98,6 +121,24 @@ export default function SignUpPage() {
                     <div className="grid gap-6">
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <div className="grid gap-4">
+                                {/* Nome */}
+                                <div className="grid gap-2">
+                                    <Label htmlFor="name">Nome</Label>
+                                    <Input
+                                        id="name"
+                                        placeholder="Seu nome completo"
+                                        type="text"
+                                        autoCapitalize="words"
+                                        autoComplete="name"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                        {...form.register("name")}
+                                    />
+                                    {form.formState.errors.name && (
+                                        <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                                    )}
+                                </div>
+
                                 {/* Email */}
                                 <div className="grid gap-2">
                                     <Label htmlFor="email">E-mail</Label>
