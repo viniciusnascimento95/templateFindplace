@@ -2,36 +2,56 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
+import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Check } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import type { ApiVenue } from "@/components/venue-list"
+import { api } from "@/lib/api"
+import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { cn } from "@/lib/utils"
-import type { Venue } from "@/lib/data"
+import { CalendarIcon, Check } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 
 interface VenueContactFormProps {
-  venue: Venue
+  venue: ApiVenue
 }
 
 export function VenueContactForm({ venue }: VenueContactFormProps) {
   const [date, setDate] = useState<Date | undefined>(undefined)
+  const [guests, setGuests] = useState("")
+  const [message, setMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!date) {
+      toast.error("Por favor, selecione uma data.")
+      return
+    }
+
     setIsSubmitting(true)
 
-    // Simulando envio do formulário
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      await api.post("/inquiries", {
+        desiredDate: date.toISOString(),
+        guestCount: Number(guests),
+        message: message,
+        venueId: Number(venue.id),
+      })
+
       setIsSubmitted(true)
-    }, 1500)
+      toast.success("Solicitação enviada com sucesso!")
+    } catch (err) {
+      console.error(err)
+      toast.error("Erro ao enviar contato. Verifique se você está logado.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (isSubmitted) {
@@ -95,7 +115,14 @@ export function VenueContactForm({ venue }: VenueContactFormProps) {
         <label htmlFor="guests" className="block text-sm font-medium mb-1">
           Número de convidados
         </label>
-        <Input id="guests" type="number" placeholder="50" required />
+        <Input
+          id="guests"
+          type="number"
+          placeholder="50"
+          required
+          value={guests}
+          onChange={(e) => setGuests(e.target.value)}
+        />
       </div>
       <div>
         <label htmlFor="message" className="block text-sm font-medium mb-1">
@@ -106,6 +133,8 @@ export function VenueContactForm({ venue }: VenueContactFormProps) {
           placeholder="Descreva seu evento e quaisquer necessidades específicas"
           rows={4}
           required
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
       </div>
       <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { api } from "@/lib/api"
 
 // Schema de validação
 const signUpSchema = z
@@ -21,6 +23,7 @@ const signUpSchema = z
         email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
         password: z.string().min(8, { message: "A senha deve ter pelo menos 8 caracteres." }),
         confirmPassword: z.string(),
+        role: z.enum(["ORGANIZER", "VENUE_OWNER"], { required_error: "Por favor, escolha um tipo de conta." }),
         terms: z.literal(true, {
             errorMap: () => ({ message: "Você deve aceitar os termos e condições." }),
         }),
@@ -43,6 +46,7 @@ export default function SignUpPage() {
             email: "",
             password: "",
             confirmPassword: "",
+            role: undefined,
         },
     })
 
@@ -51,24 +55,15 @@ export default function SignUpPage() {
         setIsLoading(true)
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: data.name,
-                    email: data.email,
-                    password: data.password,
-                }),
+            const response = await api.post("/auth/register", {
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                role: data.role
             })
 
-            if (response.ok) {
-                toast.success("Usuário criado com sucesso!")
-                router.push("/login")
-            } else {
-                toast.error("Erro ao criar usuário. Tente novamente.")
-            }
+            toast.success("Usuário criado com sucesso!")
+            router.push("/login")
         } catch (error) {
             console.error(error)
             toast.error("Erro ao conectar com o servidor.")
@@ -139,6 +134,28 @@ export default function SignUpPage() {
                                     )}
                                 </div>
 
+                                {/* Perfil (Role) */}
+                                <div className="grid gap-2">
+                                    <Label>Tipo de Conta</Label>
+                                    <Select
+                                        onValueChange={(val) => {
+                                            form.setValue("role", val as "ORGANIZER" | "VENUE_OWNER")
+                                            form.trigger("role")
+                                        }}
+                                    >
+                                        <SelectTrigger disabled={isLoading}>
+                                            <SelectValue placeholder="Selecione..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ORGANIZER">Quero encontrar um espaço (Organizador)</SelectItem>
+                                            <SelectItem value="VENUE_OWNER">Tenho um espaço (Dono de Local)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    {form.formState.errors.role && (
+                                        <p className="text-sm text-red-500">{form.formState.errors.role.message}</p>
+                                    )}
+                                </div>
+
                                 {/* Email */}
                                 <div className="grid gap-2">
                                     <Label htmlFor="email">E-mail</Label>
@@ -190,7 +207,7 @@ export default function SignUpPage() {
                                     <Checkbox
                                         id="terms"
                                         onCheckedChange={(checked) => {
-                                            form.setValue("terms", checked === true ? true : undefined) // undefined para falhar na validação se não marcado
+                                            form.setValue("terms", checked === true ? true : (undefined as unknown as true)) // undefined para falhar na validação se não marcado
                                             form.trigger("terms")
                                         }}
                                     />

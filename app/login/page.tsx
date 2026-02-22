@@ -1,17 +1,19 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Apple, Loader2, Mail } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { Loader2, Mail, Apple } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { cn } from "@/lib/utils"
+import { api } from "@/lib/api"
+import { useAuthStore } from "@/store/authStore"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 // Schema de validação para Login
 const loginSchema = z.object({
@@ -23,6 +25,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+    const router = useRouter()
+    const login = useAuthStore((state) => state.login)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const form = useForm<LoginFormValues>({
@@ -34,16 +38,45 @@ export default function LoginPage() {
         },
     })
 
-    // Função de submissão (simulada)
+    // Função de submissão
     async function onSubmit(data: LoginFormValues) {
         setIsLoading(true)
 
-        // Simulação de delay de API
-        setTimeout(() => {
-            console.log(data)
+        try {
+            // 1. Authenticate and get token
+            const response = await api.post("/auth/login", {
+                email: data.email,
+                password: data.password,
+            })
+
+            // Assume the backend returns { access_token: "..." }
+            const token = response.data.access_token || response.data.token
+
+            if (token) {
+                // Attach token briefly to api just for the next request
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+                // 2. Fetch User Profile
+                const profileResponse = await api.post("/auth/me")
+                const user = profileResponse.data
+
+                // 3. Save to Store
+                login(user, token)
+                toast.success("Login realizado com sucesso!")
+
+                // 4. Redirect based on role
+                if (user.role === "ADMIN") router.push("/dashboard/admin")
+                else if (user.role === "VENUE_OWNER") router.push("/dashboard/owner")
+                else router.push("/locais") // ORGANIZER or default
+            } else {
+                toast.error("Erro ao realizar login. Tente novamente.")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Falha no login. Verifique suas credenciais.")
+        } finally {
             setIsLoading(false)
-            // Aqui você adicionaria a lógica real de login
-        }, 2000)
+        }
     }
 
     return (
