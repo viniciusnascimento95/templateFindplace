@@ -28,13 +28,11 @@ export interface ApiVenue {
     zipCode: string,
     venueId: number
   },
-  images: [
-    {
-      id: number,
-      url: string,
-      venueId: number
-    }
-  ],
+  images: Array<{
+    id: number,
+    url: string,
+    venueId: number
+  }>,
   owner: {
     name: string,
     email: string,
@@ -94,7 +92,7 @@ export function VenueList() {
         <Card key={venue.id} className="overflow-hidden">
           <div className="relative h-48 bg-muted">
             <Image
-              src={(venue.images && venue.images[0].url) || "/placeholder.svg?height=300&width=500"}
+              src={(venue.images && venue.images.length > 0 && venue.images[0].url) ? venue.images[0].url : "/placeholder.svg?height=300&width=500"}
               alt={venue.name}
               fill
               className="object-cover"

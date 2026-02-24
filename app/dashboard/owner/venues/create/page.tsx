@@ -25,7 +25,7 @@ const venueSchema = z.object({
     city: z.string().min(2, "Cidade é obrigatória."),
     state: z.string().length(2, "Estado deve ter 2 letras (Ex: SP)."),
     zipCode: z.string().min(8, "CEP inválido."),
-    imageUrl: z.string().url("URL de imagem inválida (opcional)").or(z.literal("")),
+    images: z.any().optional(),
 })
 
 type VenueFormValues = z.infer<typeof venueSchema>
@@ -45,7 +45,7 @@ export default function CreateVenuePage() {
             city: "",
             state: "",
             zipCode: "",
-            imageUrl: "",
+            images: undefined,
         },
     })
 
@@ -53,19 +53,28 @@ export default function CreateVenuePage() {
         setIsSubmitting(true)
 
         try {
-            const payload = {
-                name: data.name,
-                description: data.description,
-                capacity: data.capacity,
-                basePrice: data.basePrice,
-                street: data.street,
-                city: data.city,
-                state: data.state.toUpperCase(),
-                zipCode: data.zipCode,
-                imageUrls: data.imageUrl ? [data.imageUrl] : [],
+            const formData = new FormData()
+            formData.append("name", data.name)
+            formData.append("description", data.description)
+            formData.append("capacity", data.capacity.toString())
+            formData.append("basePrice", data.basePrice.toString())
+            formData.append("street", data.street)
+            formData.append("city", data.city)
+            formData.append("state", data.state.toUpperCase())
+            formData.append("zipCode", data.zipCode)
+
+            if (data.images && data.images.length > 0) {
+                // Using Array.from to iterate over FileList
+                Array.from(data.images).forEach((file: any) => {
+                    formData.append("images", file)
+                })
             }
 
-            await api.post("/venues", payload)
+            await api.post("/venues", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
             toast.success("Espaço cadastrado com sucesso! Aguardando aprovação.")
             router.push("/dashboard/owner")
         } catch (error) {
@@ -163,10 +172,10 @@ export default function CreateVenuePage() {
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium border-b pb-2">Mídia</h3>
                             <div className="grid gap-2">
-                                <Label htmlFor="imageUrl">URL da Imagem de Capa</Label>
-                                <Input id="imageUrl" placeholder="https://..." disabled={isSubmitting} {...form.register("imageUrl")} />
-                                {form.formState.errors.imageUrl && (
-                                    <p className="text-sm text-red-500">{form.formState.errors.imageUrl.message}</p>
+                                <Label htmlFor="images">Imagens (até 10)</Label>
+                                <Input id="images" type="file" multiple accept="image/*" disabled={isSubmitting} {...form.register("images")} />
+                                {form.formState.errors.images && (
+                                    <p className="text-sm text-red-500">{form.formState.errors.images.message as string}</p>
                                 )}
                             </div>
                         </div>
